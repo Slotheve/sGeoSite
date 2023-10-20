@@ -56,7 +56,7 @@ jobs:
           draft: false
           prerelease: false
           files: |
-            .dist/*
+            ./dist/*
 
       - name: Git push  to "Release"
         run: |
