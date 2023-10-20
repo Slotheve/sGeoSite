@@ -184,10 +184,6 @@ func generate(release *github.RepositoryRelease, output string) error {
 	return geosite.Write(outputFile, domainMap)
 }
 
-func setActionOutput(name string, content string) {
-	os.Stdout.WriteString('"name=" + name + "::" + content' >> $GITHUB_OUTPUT + "\n")
-}
-
 func release(source string, destination string, output string) error {
 	sourceRelease, err := fetch(source)
 	if err != nil {
@@ -199,7 +195,6 @@ func release(source string, destination string, output string) error {
 	} else {
 		if os.Getenv("NO_SKIP") != "true" && strings.Contains(*destinationRelease.Name, *sourceRelease.Name) {
 			logrus.Info("already latest")
-			setActionOutput("skip", "true")
 			return nil
 		}
 	}
@@ -207,9 +202,7 @@ func release(source string, destination string, output string) error {
 	if err != nil {
 		return err
 	}
-	// Remove "Released on" from Loyalsoldier/v2ray-rules-dat
 	tagName := *sourceRelease.Name
-	setActionOutput("tag", tagName[12:])
 	return nil
 }
 
