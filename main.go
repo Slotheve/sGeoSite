@@ -209,7 +209,7 @@ func release(source string, destination string, output string) error {
 	}
 	// Remove "Released on" from Loyalsoldier/v2ray-rules-dat
 	tagName := *sourceRelease.Name
-	setActionOutput("tag", tagName[4:])
+	setActionOutput("tag", tagName[5:])
 	return nil
 }
 
