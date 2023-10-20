@@ -8,6 +8,10 @@ on:
       - master
     paths-ignore:
       - "**/README.md"
+
+permissions:
+  contents: write
+
 jobs:
   build:
     name: Build
@@ -56,7 +60,7 @@ jobs:
           draft: false
           prerelease: false
           files: |
-            ./dist/*
+            ./sGeoSite/sGeoSite/dist/*
 
       - name: Git push  to "Release"
         run: |
