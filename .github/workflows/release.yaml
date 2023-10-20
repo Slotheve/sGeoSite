@@ -57,11 +57,11 @@ jobs:
           draft: false
           prerelease: false
           files: |
-            ./sGeoSite/sGeoSite/dist/*
+            ./dist/*
 
       - name: Git push  to "Release"
         run: |
-          cd sGeoSite/sGeoSite/dist || exit 1
+          cd dist || exit 1
           git init
           git config --local user.name "github-actions[bot]"
           git config --local user.email "41898282+github-actions[bot]@users.noreply.github.com"
