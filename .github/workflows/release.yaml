@@ -30,63 +30,33 @@ jobs:
           mkdir dist
           cp geosite.db dist/
           sha256sum geosite.db > dist/geosite.db.sha256sum
-      - name: Push artifacts to release branch
-        if: steps.build.outputs.skip != 'true'
+      - name: Generate Release
+        id: tag
         run: |
-          git config --local user.email "891708+soffchen@users.noreply.github.com"
-          git config --local user.name "github-action[bot]"
-          git fetch
-          git checkout release
-          git checkout --orphan release-orphan
-          git rm -rf .
-          
-          cp dist/* .
-          git add geosite.db
-          git add geosite.db.sha256sum
-          
-          git commit -am "Updated at $(date)"
-          git branch -D release
-          git branch -m release
-      - name: GitHub Push
-        uses: ad-m/github-push-action@v0.6.0
-        with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          branch: release
-          force: true
+          echo "release_tag=$(date +"%Y.%m.%d")" >> $GITHUB_OUTPUT
+          echo "release_date=$(date +"%Y.%m.%d")" >> $GITHUB_OUTPUT
+          echo "status=success" >> $GITHUB_OUTPUT
 
-      - name: Purge CDN Cache
-        run: |
-          curl -L https://purge.jsdelivr.net/gh/soffchen/sing-geosite@release/geosite.db > /dev/null 2>&1
-          curl -L https://purge.jsdelivr.net/gh/soffchen/sing-geosite@release/geosite.db.sha256sum > /dev/null 2>&1
-          
-      - name: Create a release
-        if: steps.build.outputs.skip != 'true'
-        id: create_release
-        uses: actions/create-release@v1
+      - name: Upload to Release
+        uses: softprops/action-gh-release@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          tag_name: ${{ steps.build.outputs.tag }}
-          release_name: ${{ steps.build.outputs.tag }}
+          name: ${{ steps.tag.outputs.release_date }}
+          tag_name: ${{ steps.tag.outputs.release_tag }}
           draft: false
           prerelease: false
-      - name: Release geosite.db
-        if: steps.build.outputs.skip != 'true'
-        uses: actions/upload-release-asset@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: ./geosite.db
-          asset_name: geosite.db
-          asset_content_type: application/octet-stream
-      - name: Release geosite.db sha256sum
-        if: steps.build.outputs.skip != 'true'
-        uses: actions/upload-release-asset@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: ./geosite.db.sha256sum
-          asset_name: geosite.db.sha256sum
-          asset_content_type: text/plain
+          files: |
+            ./sGeoSite/dist/*
+
+      - name: Git push  to "Release"
+        run: |
+          cd sGeoSite/dist || exit 1
+          git init
+          git config --local user.name "github-actions[bot]"
+          git config --local user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git checkout -b release
+          git add .
+          git commit -m "${{ steps.tag.outputs.release_date }}"
+          git remote add origin "https://${{ github.actor }}:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}"
+          git push -f -u origin release
