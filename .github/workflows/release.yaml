@@ -55,10 +55,8 @@ jobs:
           tag_name: ${{ steps.tag.outputs.release_tag }}
           draft: false
           prerelease: false
-          run: |
-            ls
           files: |
-            ./sGeoSite/dist/*
+            .dist/*
 
       - name: Git push  to "Release"
         run: |
