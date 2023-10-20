@@ -36,6 +36,7 @@ jobs:
       - name: Generate sha256 hash
         if: steps.build.outputs.skip != 'true'
         run: |
+          ls
           mkdir dist
           cp geosite.db dist/
           sha256sum geosite.db > dist/geosite.db.sha256sum
@@ -57,11 +58,11 @@ jobs:
           draft: false
           prerelease: false
           files: |
-            ./sGeoSite/dist/*
+            ./dist/*
 
       - name: Git push  to "Release"
         run: |
-          cd sGeoSite/dist || exit 1
+          cd dist || exit 1
           git init
           git config --local user.name "github-actions[bot]"
           git config --local user.email "41898282+github-actions[bot]@users.noreply.github.com"
