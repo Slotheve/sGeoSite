@@ -202,7 +202,6 @@ func release(source string, destination string, output string) error {
 	if err != nil {
 		return err
 	}
-	tagName := *sourceRelease.Name
 	return nil
 }
 
