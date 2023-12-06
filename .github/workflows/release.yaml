@@ -25,7 +25,7 @@ jobs:
           echo "name=go_version::1.19.9" >> $GITHUB_OUTPUT
 
       - name: Setup Go
-        uses: actions/setup-go@v2
+        uses: actions/setup-go@v5
         with:
           go-version: ${{ steps.version.outputs.go_version }}
       - name: Build geosite
